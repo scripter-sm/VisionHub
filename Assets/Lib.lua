@@ -808,7 +808,6 @@ Window._Tabs = {};
 function Window:Tab(NameOrOpts)
 local TabOpts = typeof(NameOrOpts) == "table" and NameOrOpts or { Name = tostring(NameOrOpts) };
 local TabName = tostring(TabOpts.Name or TabOpts.Title or "Tab");
-local TabIcon = TabOpts.Icon or nil;
 
 if not self._Tabs then
     self._Tabs = {}
@@ -894,16 +893,6 @@ BorderSizePixel        = 0;
 BackgroundTransparency = 1;
 ZIndex                 = 2;
 });
-
-local Icon = nil;
-if TabIcon then
-local iconPath = "Vision/Assets/main.png";
-if not isfile(iconPath) then
-if not isfolder("Vision") then makefolder("Vision") end;
-if not isfolder("Vision/Assets") then makefolder("Vision/Assets") end;
-writefile(iconPath, game:HttpGet("https://github.com/scripter-sm/VisionHub/raw/main/Assets/main.png"));
-end;
-end;
 
 local Lbl = Library.CreateInstance(Library,"TextLabel", {
 Name                   = "Label";
