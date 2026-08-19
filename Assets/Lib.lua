@@ -34,6 +34,42 @@ local NewColorSequenceKeypoint = ColorSequenceKeypoint.new;
 local NewNumberSequence = NumberSequence.new;
 local NewNumberSequenceKeypoint = NumberSequenceKeypoint.new;
 
+-- File I/O compatibility layer
+local isfile = isfile or function(path)
+	local success = pcall(function()
+		return readfile(path)
+	end)
+	return success
+end
+
+local isfolder = isfolder or function(path)
+	return false
+end
+
+local makefolder = makefolder or function(path)
+	-- Placeholder - folder creation not supported
+end
+
+local listfiles = listfiles or function(path)
+	return {}
+end
+
+local writefile = writefile or function(path, content)
+	-- Placeholder - file writing not supported
+end
+
+local readfile = readfile or function(path)
+	return ""
+end
+
+local delfile = delfile or function(path)
+	-- Placeholder - file deletion not supported
+end
+
+local appendfile = appendfile or function(path, content)
+	-- Placeholder - file appending not supported
+end
+
 local Library = {
     Flags = {};
     Toggles = {};
@@ -635,10 +671,11 @@ end
 
 function Library.Window(self, Opts) 
 Opts = typeof(Opts) == "table" and Opts or {};
-local Width     = tonumber(Opts.Width)     or 400;
-local Height    = tonumber(Opts.Height)    or 700;
-local MinWidth  = tonumber(Opts.MinWidth)  or 280;
-local MinHeight = tonumber(Opts.MinHeight) or 400;
+local IsMobile = Services.UserInputService.TouchEnabled;
+local Width     = tonumber(Opts.Width)     or (IsMobile and 280 or 400);
+local Height    = tonumber(Opts.Height)    or (IsMobile and 400 or 700);
+local MinWidth  = tonumber(Opts.MinWidth)  or (IsMobile and 200 or 280);
+local MinHeight = tonumber(Opts.MinHeight) or (IsMobile and 300 or 400);
 if Width  < MinWidth  then Width  = MinWidth  end;
 if Height < MinHeight then Height = MinHeight end;
 
@@ -711,13 +748,13 @@ local Title = self.CreateInstance(self,"TextLabel", {
 Name                   = "Title";
 Parent                 = Outer;
 AnchorPoint            = Vector2.new(0.5, 0);
-Position               = UDim2.new(0.5, 0, 0, 9);
-Size                   = UDim2.new(1, -12, 0, 18);
+Position               = UDim2.new(0.5, 0, 0, (IsMobile and 6 or 9));
+Size                   = UDim2.new(1, -12, 0, (IsMobile and 14 or 18));
 BackgroundTransparency = 1;
 BorderSizePixel        = 0;
 Text                   = TitleText;
 TextColor3             = Color3.fromHex("FFFFFF");
-TextSize               = 12;
+TextSize               = (IsMobile and 10 or 12);
 TextXAlignment         = Enum.TextXAlignment.Center;
 TextYAlignment         = Enum.TextYAlignment.Center;
 });
@@ -726,8 +763,8 @@ if ProggyCleanFont then Title.FontFace = ProggyCleanFont end;
 local Content = self.CreateInstance(self,"Frame", {
 Name             = "Content";
 Parent           = Outer;
-Position         = UDim2.new(0, 5, 0, 34);
-Size             = UDim2.new(1, -10, 1, -39);
+Position         = UDim2.new(0, 5, 0, (IsMobile and 24 or 34));
+Size             = UDim2.new(1, -10, 1, -(IsMobile and 29 or 39));
 BackgroundColor3 = Color3.fromHex("FFFFFF");
 BorderSizePixel  = 0;
 });
@@ -805,6 +842,46 @@ end;
 local Window = { Gui = Gui, Outer = Outer, TopLine = TopLine, Content = Content };
 Window._Tabs = {};
 
+-- Mobile toggle button (only visible on mobile)
+if IsMobile then
+    local MobileToggle = Library.CreateInstance(Library,"TextButton", {
+        Name                   = "MobileToggle";
+        Parent                 = (gethui and gethui()) or Services.CoreGui;
+        AnchorPoint            = Vector2.new(1, 1);
+        Position               = UDim2.new(1, -10, 1, -10);
+        Size                   = UDim2.fromOffset(40, 40);
+        BackgroundColor3       = Library.Accent;
+        BackgroundTransparency = 0.2;
+        BorderSizePixel        = 0;
+        AutoButtonColor        = false;
+        Text                   = "☰";
+        TextColor3             = Color3.fromHex("FFFFFF");
+        TextSize               = 20;
+        TextXAlignment         = Enum.TextXAlignment.Center;
+        TextYAlignment         = Enum.TextYAlignment.Center;
+        ZIndex                 = 1000;
+    });
+    Library.CreateInstance(Library,"UICorner", {
+        Parent = MobileToggle;
+        CornerRadius = UDim.new(0, 8);
+    });
+    Library.CreateInstance(Library,"UIStroke", {
+        Parent          = MobileToggle;
+        Color           = Color3.fromHex("000000");
+        Thickness       = 2;
+        Transparency    = 0;
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
+    });
+    
+    Library.RegisterAccent(Library,MobileToggle, "BackgroundColor3");
+    
+    MobileToggle.MouseButton1Click:Connect(function()
+        Window:Toggle();
+    end);
+    
+    Window.MobileToggle = MobileToggle;
+end
+
 function Window:Tab(NameOrOpts)
 local TabOpts = typeof(NameOrOpts) == "table" and NameOrOpts or { Name = tostring(NameOrOpts) };
 local TabName = tostring(TabOpts.Name or TabOpts.Title or "Tab");
@@ -818,7 +895,7 @@ self.TabBar = Library.CreateInstance(Library,"Frame", {
 Name                   = "TabBar";
 Parent                 = self.Content;
 Position               = UDim2.new(0, 0, 0, 0);
-Size                   = UDim2.new(1, 0, 0, 24);
+Size                   = UDim2.new(1, 0, 0, (IsMobile and 16 or 24));
 BackgroundTransparency = 1;
 BorderSizePixel        = 0;
 ZIndex                 = 5;
@@ -928,8 +1005,8 @@ Library.RegisterAccentGradient(Library,TabTopGradient);
 local Page = Library.CreateInstance(Library,"CanvasGroup", {
 Name                   = "Page_" .. TabName;
 Parent                 = self.Content;
-Position               = UDim2.new(0, 0, 0, 24);
-Size                   = UDim2.new(1, 0, 1, -24);
+Position               = UDim2.new(0, 0, 0, (IsMobile and 16 or 24));
+Size                   = UDim2.new(1, 0, 1, -(IsMobile and 16 or 24));
 BackgroundTransparency = 1;
 BorderSizePixel        = 0;
 Visible                = false;
@@ -937,10 +1014,10 @@ GroupTransparency      = 1;
 });
 Library.CreateInstance(Library,"UIPadding", {
 Parent        = Page;
-PaddingLeft   = UDim.new(0, 6);
-PaddingRight  = UDim.new(0, 6);
-PaddingTop    = UDim.new(0, 11);
-PaddingBottom = UDim.new(0, 6);
+PaddingLeft   = UDim.new(0, (IsMobile and 4 or 6));
+PaddingRight  = UDim.new(0, (IsMobile and 4 or 6));
+PaddingTop    = UDim.new(0, (IsMobile and 8 or 11));
+PaddingBottom = UDim.new(0, (IsMobile and 4 or 6));
 });
 
 local LeftColumn = Library.CreateInstance(Library,"ScrollingFrame", {
@@ -6160,6 +6237,9 @@ end;
 local Info = TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out);
 if self.Visible then
 Gui.Enabled = true;
+if self.MobileToggle then
+    self.MobileToggle.Text = "✕";
+end
 for Inst, PMap in self._FadeOriginals do
 if Inst.Parent then
 local Goal = {};
@@ -6168,6 +6248,9 @@ Library.Tween(Library,Inst, Info, Goal):Play();
 end;
 end;
 else
+if self.MobileToggle then
+    self.MobileToggle.Text = "☰";
+end
 for Inst, PMap in self._FadeOriginals do
 if Inst.Parent then
 local Goal = {};
@@ -6187,6 +6270,9 @@ self:SetVisible(not self.Visible);
 end;
 
 function Window:Destroy()
+if self.MobileToggle then
+    self.MobileToggle:Destroy();
+end
 Gui:Destroy();
 if Library.CurrentlyOpen == self then Library.CurrentlyOpen = nil end;
 end;
