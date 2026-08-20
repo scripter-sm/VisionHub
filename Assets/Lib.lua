@@ -669,13 +669,20 @@ end);
 end);
 end
 
-function Library.Window(self, Opts) 
+function Library.Window(self, Opts)
 Opts = typeof(Opts) == "table" and Opts or {};
 local IsMobile = Services.UserInputService.TouchEnabled;
 local Width     = tonumber(Opts.Width)     or (IsMobile and 280 or 400);
 local Height    = tonumber(Opts.Height)    or (IsMobile and 400 or 700);
 local MinWidth  = tonumber(Opts.MinWidth)  or (IsMobile and 200 or 280);
 local MinHeight = tonumber(Opts.MinHeight) or (IsMobile and 300 or 400);
+-- Make mobile sizes even smaller
+if IsMobile then
+    Width = Width * 0.85
+    Height = Height * 0.85
+    MinWidth = MinWidth * 0.85
+    MinHeight = MinHeight * 0.85
+end
 if Width  < MinWidth  then Width  = MinWidth  end;
 if Height < MinHeight then Height = MinHeight end;
 
@@ -748,13 +755,13 @@ local Title = self.CreateInstance(self,"TextLabel", {
 Name                   = "Title";
 Parent                 = Outer;
 AnchorPoint            = Vector2.new(0.5, 0);
-Position               = UDim2.new(0.5, 0, 0, (IsMobile and 6 or 9));
-Size                   = UDim2.new(1, -12, 0, (IsMobile and 14 or 18));
+Position               = UDim2.new(0.5, 0, 0, (IsMobile and 4 or 9));
+Size                   = UDim2.new(1, -12, 0, (IsMobile and 12 or 18));
 BackgroundTransparency = 1;
 BorderSizePixel        = 0;
 Text                   = TitleText;
 TextColor3             = Color3.fromHex("FFFFFF");
-TextSize               = (IsMobile and 10 or 12);
+TextSize               = (IsMobile and 8 or 12);
 TextXAlignment         = Enum.TextXAlignment.Center;
 TextYAlignment         = Enum.TextYAlignment.Center;
 });
@@ -763,8 +770,8 @@ if ProggyCleanFont then Title.FontFace = ProggyCleanFont end;
 local Content = self.CreateInstance(self,"Frame", {
 Name             = "Content";
 Parent           = Outer;
-Position         = UDim2.new(0, 5, 0, (IsMobile and 24 or 34));
-Size             = UDim2.new(1, -10, 1, -(IsMobile and 29 or 39));
+Position         = UDim2.new(0, 5, 0, (IsMobile and 18 or 34));
+Size             = UDim2.new(1, -10, 1, -(IsMobile and 22 or 39));
 BackgroundColor3 = Color3.fromHex("FFFFFF");
 BorderSizePixel  = 0;
 });
@@ -895,7 +902,7 @@ self.TabBar = Library.CreateInstance(Library,"Frame", {
 Name                   = "TabBar";
 Parent                 = self.Content;
 Position               = UDim2.new(0, 0, 0, 0);
-Size                   = UDim2.new(1, 0, 0, (IsMobile and 16 or 24));
+Size                   = UDim2.new(1, 0, 0, (IsMobile and 12 or 24));
 BackgroundTransparency = 1;
 BorderSizePixel        = 0;
 ZIndex                 = 5;
@@ -1005,8 +1012,8 @@ Library.RegisterAccentGradient(Library,TabTopGradient);
 local Page = Library.CreateInstance(Library,"CanvasGroup", {
 Name                   = "Page_" .. TabName;
 Parent                 = self.Content;
-Position               = UDim2.new(0, 0, 0, (IsMobile and 16 or 24));
-Size                   = UDim2.new(1, 0, 1, -(IsMobile and 16 or 24));
+Position               = UDim2.new(0, 0, 0, (IsMobile and 12 or 24));
+Size                   = UDim2.new(1, 0, 1, -(IsMobile and 12 or 24));
 BackgroundTransparency = 1;
 BorderSizePixel        = 0;
 Visible                = false;
@@ -1014,10 +1021,10 @@ GroupTransparency      = 1;
 });
 Library.CreateInstance(Library,"UIPadding", {
 Parent        = Page;
-PaddingLeft   = UDim.new(0, (IsMobile and 4 or 6));
-PaddingRight  = UDim.new(0, (IsMobile and 4 or 6));
-PaddingTop    = UDim.new(0, (IsMobile and 8 or 11));
-PaddingBottom = UDim.new(0, (IsMobile and 4 or 6));
+PaddingLeft   = UDim.new(0, (IsMobile and 2 or 6));
+PaddingRight  = UDim.new(0, (IsMobile and 2 or 6));
+PaddingTop    = UDim.new(0, (IsMobile and 4 or 11));
+PaddingBottom = UDim.new(0, (IsMobile and 2 or 6));
 });
 
 local LeftColumn = Library.CreateInstance(Library,"ScrollingFrame", {
