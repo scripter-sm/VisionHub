@@ -3936,7 +3936,28 @@ do
         elseif kind == "textbox" then
             obj = section:textbox({ name = name, flag = flag, callback = cb, default = def or "" })
         elseif kind == "keybind" then
-            obj = section:keybind({ name = name, flag = flag, callback = cb, default = def or opt(o, "Key", "key") })
+            local kb
+            local usercb = cb
+            local keyOpt = opt(o, "Key", "key", "Default", "default")
+            if keyOpt == nil or keyOpt == false or keyOpt == "None" or keyOpt == "NONE" then keyOpt = nil end
+            kb = section:keybind({
+                name = name, flag = flag,
+                key = keyOpt,
+                mode = opt(o, "Mode", "mode") or "Toggle",
+                callback = function()
+                    if not usercb then return end
+                    local k = kb.key
+                    if typeof(k) == "EnumItem" then k = k.Name end
+                    if k == nil or tostring(k) == "NONE" then
+                        k = "None"
+                    else
+                        k = tostring(k):gsub("Enum%.", ""):gsub("KeyCode%.", ""):gsub("UserInputType%.", "")
+                    end
+                    local ok, e = pcall(usercb, k, tostring(kb.mode or "Toggle"), kb.active)
+                    if not ok then warn("[Vision] keybind callback error: " .. tostring(e)) end
+                end,
+            })
+            obj = kb
         elseif kind == "colorpicker" then
             obj = section:colorpicker({
                 name = name or "color", flag = flag, callback = cb,
