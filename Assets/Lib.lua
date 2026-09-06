@@ -19,7 +19,7 @@ local getcustomasset = getcustomasset or getsynasset or function(p) return "rbxa
 local LRM_SecondsLeft = LRM_SecondsLeft or math.huge
 
 local library = {
-    _version      = "5",
+    _version      = "6",
     directory     = "Vision",
     folders       = { "/fonts", "/configs", "/assets" },
     priority      = {},
@@ -274,7 +274,7 @@ end
             end)
 
             library:connection(uis.InputChanged, function(input, game_event)
-                if resizing and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+                if resizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
                     local viewport_x = camera.ViewportSize.X
                     local viewport_y = camera.ViewportSize.Y
 
@@ -344,7 +344,7 @@ end
             end)
 
             library:connection(uis.InputChanged, function(input, game_event)
-                if dragging and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+                if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
                     local viewport_x = camera.ViewportSize.X
                     local viewport_y = camera.ViewportSize.Y
 
@@ -1972,7 +1972,7 @@ end
             end)
 
             library:connection(uis.InputChanged, function(input)
-                if cfg.dragging and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+                if cfg.dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
                     local size_x = (input.Position.X - items[ "slider" ].AbsolutePosition.X) / items[ "slider" ].AbsoluteSize.X
                     local value = ((cfg.max - cfg.min) * size_x) + cfg.min
                     cfg.set(value)
@@ -2865,7 +2865,7 @@ end
             end)
 
             uis.InputChanged:Connect(function(input)
-                if (dragging_sat or dragging_hue or dragging_alpha) and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+                if (dragging_sat or dragging_hue or dragging_alpha) and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
                     cfg.update_color()
                 end
             end)
