@@ -19,7 +19,7 @@ local getcustomasset = getcustomasset or getsynasset or function(p) return "rbxa
 local LRM_SecondsLeft = LRM_SecondsLeft or math.huge
 
 local library = {
-    _version      = "6",
+    _version      = "8",
     directory     = "Vision",
     folders       = { "/fonts", "/configs", "/assets" },
     priority      = {},
@@ -3874,10 +3874,10 @@ do
     end
 
     function library:Get()
-        if self.flag ~= nil and flags[self.flag] ~= nil then return flags[self.flag] end
         if self.enabled ~= nil then return self.enabled end
         if self.value ~= nil then return self.value end
         if self.color ~= nil then return self.color, self.alpha end
+        if self.flag ~= nil and flags[self.flag] ~= nil then return flags[self.flag] end
         return self.default
     end
 
@@ -3896,23 +3896,25 @@ do
     local function hostOf(obj)
         local i = obj.items
         if not i then return nil end
-        return i["toggle"] or i["slider_object"] or i["dropdown"] or i["button_object"]
-            or i["keybind_holder"] or i["colorpicker"] or i["label"] or i["textbox"]
+        return i["toggle"] or i["slider_object"] or i["dropdown_object"] or i["keybind_element"]
+            or i["button_element"] or i["textbox"] or i["label"] or i["colorpicker"]
+    end
+
+    local function truthy(v)
+        if type(v) == "table" then return next(v) ~= nil end
+        return v ~= nil and v ~= false
     end
 
     local function applyDependency(obj, dep)
-        if not dep then return end
+        if not dep or type(dep) ~= "table" then return end
         local host = hostOf(obj)
         if not host then return end
-        local function refresh()
-            local on = true
-            if type(dep) == "table" and dep.Get then
-                on = dep:Get() and true or false
-            end
-            host.Visible = on
+        local function refresh(v)
+            if v == nil and dep.Get then v = dep:Get() end
+            host.Visible = truthy(v)
         end
-        if type(dep) == "table" and dep.OnChange then dep:OnChange(refresh) end
-        task.defer(refresh)
+        if dep.OnChange then dep:OnChange(refresh) end
+        task.defer(function() refresh(dep.Get and dep:Get() or nil) end)
     end
 
     local function makeElement(section, kind, o)
@@ -4000,9 +4002,23 @@ do
     function library:Button(o)      return makeElement(self, "button", o) end
 
     function library:AddColorpicker(o)
+        o = typeof(o) == "table" and o or {}
         local sec = self.__section
         if not sec then return self end
-        return makeElement(sec, "colorpicker", o)
+        -- all AddColorpicker calls on the same element share ONE right-aligned row,
+        -- labelled with `Row` (or the first picker's `Name`)
+        if not self.__cp_host then
+            local rowlabel = tostring(o.Row or o.row or opt(o, "Name", "name") or "")
+            local row = sec:label({ name = rowlabel })
+            self.__cp_host = setmetatable({
+                items = {
+                    right_components = row and row.items and row.items["right_components"],
+                    elements = sec.items and sec.items["elements"],
+                },
+            }, library)
+            self.__cp_row = row
+        end
+        return makeElement(self.__cp_host, "colorpicker", o)
     end
     function library:AddKeybind(o)
         local sec = self.__section
