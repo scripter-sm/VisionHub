@@ -19,7 +19,7 @@ local getcustomasset = getcustomasset or getsynasset or function(p) return "rbxa
 local LRM_SecondsLeft = LRM_SecondsLeft or math.huge
 
 local library = {
-    _version      = "udumb",
+    _version      = "4",
     directory     = "Vision",
     folders       = { "/fonts", "/configs", "/assets" },
     priority      = {},
@@ -3946,7 +3946,7 @@ do
                 key = keyOpt,
                 mode = opt(o, "Mode", "mode") or "Toggle",
                 callback = function()
-                    if not usercb then return end
+                    if not kb or not usercb then return end
                     local k = kb.key
                     if typeof(k) == "EnumItem" then k = k.Name end
                     if k == nil or tostring(k) == "NONE" then
