@@ -19,6 +19,7 @@ local getcustomasset = getcustomasset or getsynasset or function(p) return "rbxa
 local LRM_SecondsLeft = LRM_SecondsLeft or math.huge
 
 local library = {
+    _version      = "udumb",
     directory     = "Vision",
     folders       = { "/fonts", "/configs", "/assets" },
     priority      = {},
