@@ -19,7 +19,7 @@ local getcustomasset = getcustomasset or getsynasset or function(p) return "rbxa
 local LRM_SecondsLeft = LRM_SecondsLeft or math.huge
 
 local library = {
-    _version      = "14",
+    _version      = "15",
     directory     = "Vision",
     folders       = { "/fonts", "/configs", "/assets" },
     priority      = {},
@@ -7891,7 +7891,8 @@ do
         elseif kind == "colorpicker" then
             obj = section:colorpicker({
                 name = name or "color", flag = flag, callback = cb,
-                default = def, alpha = opt(o, "Alpha", "alpha", "Transparency"),
+                color = (typeof(def) == "Color3") and def or nil,
+                alpha = opt(o, "Alpha", "alpha", "Transparency"),
             })
         elseif kind == "label" then
             obj = section:label({ name = name or "" })
@@ -7938,7 +7939,22 @@ do
     function library:AddKeybind(o)
         local sec = self.__section
         if not sec then return self end
-        return makeElement(sec, "keybind", o)
+        local parent = self
+        o = typeof(o) == "table" and o or {}
+        local usercb = opt(o, "Callback", "callback")
+        return makeElement(sec, "keybind", {
+            Name = opt(o, "Name", "name"),
+            Mode = opt(o, "Mode", "mode") or "Toggle",
+            Default = opt(o, "Default", "default", "Key", "key"),
+            Flag = opt(o, "Flag", "flag"),
+            Callback = function(key, mode, active)
+                -- a keybind on a toggle drives that toggle (VisionHub behaviour)
+                if key and key ~= "None" and parent and parent.set and parent.enabled ~= nil then
+                    parent.set(active and true or false)
+                end
+                if usercb then usercb(key, mode, active) end
+            end,
+        })
     end
 
     function library:Row()
