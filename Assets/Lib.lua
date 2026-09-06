@@ -19,7 +19,7 @@ local getcustomasset = getcustomasset or getsynasset or function(p) return "rbxa
 local LRM_SecondsLeft = LRM_SecondsLeft or math.huge
 
 local library = {
-    _version      = "4",
+    _version      = "5",
     directory     = "Vision",
     folders       = { "/fonts", "/configs", "/assets" },
     priority      = {},
@@ -44,8 +44,9 @@ end
 for _, path in next, library.folders do
     pcall(makefolder, library.directory .. path)
 end
-    local scale = 0.5
     local uis = Services.UserInputService
+    local is_mobile = uis.TouchEnabled and not uis.MouseEnabled
+    local scale = is_mobile and 0.7 or 1
     local players = Services.Players
     local ws = Services.Workspace
     local rs = Services.ReplicatedStorage
@@ -780,7 +781,7 @@ end
                 BorderSizePixel = 0;
                 Text = "";
                 AutoButtonColor = false;
-                Visible = true;
+                Visible = is_mobile;
                 BackgroundColor3 = rgb(25, 25, 29)
             });
 
@@ -813,11 +814,22 @@ end
             });
 
             local open = true
-            items[ "close button" ].InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 or (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
-                    open = not open
+            function cfg.toggle_ui()
+                open = not open
+                cfg.toggle_menu(open)
+            end
 
-                    cfg.toggle_menu(open)
+            items[ "close button" ].InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    cfg.toggle_ui()
+                end
+            end)
+
+            cfg.menu_key = Enum.KeyCode.Insert
+            library:connection(uis.InputBegan, function(input, game_processed)
+                if game_processed then return end
+                if input.KeyCode == cfg.menu_key then
+                    cfg.toggle_ui()
                 end
             end)
 
@@ -4033,11 +4045,13 @@ do
     function library:Window(o)
         if o == library then o = nil end
         o = typeof(o) == "table" and o or {}
+        local w = math.max(tonumber(o.Width) or 0, 720)
+        local h = math.max(tonumber(o.Height) or 0, 560)
         return library:window({
             name = string.lower(tostring(o.Title or o.Name or "vision")),
             suffix = "",
             gameInfo = tostring(o.GameInfo or o.Game or "Vision"),
-            size = (o.Width and o.Height) and dim2(0, o.Width, 0, o.Height) or nil,
+            size = dim2(0, w, 0, h),
         })
     end
     library.CreateWindow = library.Window
