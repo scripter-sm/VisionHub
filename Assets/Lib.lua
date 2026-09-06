@@ -205,9 +205,51 @@ writefile(Library.LogFile, Library.Directory .. " has started\n");
 
 local LogStart = tick();
 
-function Library.Log(self, Text) 
+Library.LogHistory   = {};       -- in-memory ring of every line logged this session
+Library.LogToConsole = true;     -- also mirror lines to the executor console
+Library.LogMaxHistory = 500;
+
+-- Original Vision logging system: timestamped, appended to Library.LogFile,
+-- kept in memory, and (optionally) mirrored to the console.
+-- Backwards compatible: Library.Log(Library, "text")  /  Library:Log("text")
+function Library.Log(self, Text, Level)
+if typeof(self) == "string" then
+	self, Text, Level = Library, self, Text;
+end
+self = self or Library;
+
+Level = tostring(Level or "INFO"):upper();
 local Stamp = string.format("%.3f", tick() - LogStart);
-appendfile(self.LogFile, "[" .. Stamp .. "s] " .. tostring(Text) .. "\n");
+local Line  = "[" .. Stamp .. "s] [" .. Level .. "] " .. tostring(Text);
+
+table.insert(self.LogHistory, Line);
+if #self.LogHistory > (self.LogMaxHistory or 500) then
+	table.remove(self.LogHistory, 1);
+end
+
+pcall(function()
+	appendfile(self.LogFile, Line .. "\n");
+end);
+
+if self.LogToConsole then
+	if Level == "ERROR" or Level == "FATAL" then
+		warn("[ Vision ] " .. tostring(Text));
+	elseif Level == "WARN" or Level == "WARNING" then
+		warn("[ Vision ] " .. tostring(Text));
+	else
+		print("[ Vision ] " .. tostring(Text));
+	end
+end
+
+return Line;
+end
+
+function Library.LogWarn(self, Text)  return Library.Log(Library, Text, "WARN")  end
+function Library.LogError(self, Text) return Library.Log(Library, Text, "ERROR") end
+
+-- Dump the whole in-memory log (handy for error reports)
+function Library.GetLog(self)
+return table.concat(Library.LogHistory, "\n");
 end
 
 Library.KeyNames = {
