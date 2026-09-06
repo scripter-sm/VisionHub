@@ -88,19 +88,19 @@ Library._NotifyMaxHeight = 300;
 
 local Palette = {
 Default = {
-Top = Color3.fromHex("161616");
-Bottom = Color3.fromHex("1E1E1E");
-ContentTop = Color3.fromHex("151515");
-ContentBottom = Color3.fromHex("171717");
-FooterTop = Color3.fromHex("151515");
-FooterBottom = Color3.fromHex("1F1F1F");
-Outline = Color3.fromHex("000105");
-InnerOutline = Color3.fromHex("252527");
-TitleTop = Color3.fromHex("F3F4F8");
-TitleBottom = Color3.fromHex("557294");
-TabActive = Color3.fromHex("557294");
-Accent = Color3.fromHex("557294");
-TabInactive = Color3.fromHex("BFC4CC");
+Top = Color3.fromHex("131316");
+Bottom = Color3.fromHex("17171B");
+ContentTop = Color3.fromHex("131316");
+ContentBottom = Color3.fromHex("131316");
+FooterTop = Color3.fromHex("131316");
+FooterBottom = Color3.fromHex("17171B");
+Outline = Color3.fromHex("000000");
+InnerOutline = Color3.fromHex("17171D");
+TitleTop = Color3.fromHex("FFFFFF");
+TitleBottom = Color3.fromHex("00A2FF");
+TabActive = Color3.fromHex("00A2FF");
+Accent = Color3.fromHex("00A2FF");
+TabInactive = Color3.fromHex("B4B4B4");
 };
 };
 Library.Palette = Palette;
@@ -548,13 +548,23 @@ end);
 end
 
 local ProggyCleanFont;
+local ProggyCleanFontMedium;
 do
-local Asset = Library.RegisterFont(Library,"ProggyClean", "https://github.com/networph-private874612748471/curly-octo-memory/raw/refs/heads/main/fs-tahoma-8px.ttf", 400, "normal");
-if Asset then
-ProggyCleanFont = Font.new(Asset, Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+-- idk.lua-style typography: Inter (Medium for body, SemiBold for titles)
+local MediumAsset  = Library.RegisterFont(Library,"InterMedium",  "https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/Inter_28pt-Medium.ttf",   500, "normal");
+local SemiBoldAsset = Library.RegisterFont(Library,"InterSemiBold","https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/Inter_28pt-SemiBold.ttf", 600, "normal");
+if SemiBoldAsset then
+ProggyCleanFont = Font.new(SemiBoldAsset, Enum.FontWeight.SemiBold, Enum.FontStyle.Normal);
+elseif MediumAsset then
+ProggyCleanFont = Font.new(MediumAsset, Enum.FontWeight.Medium, Enum.FontStyle.Normal);
 else
-warn("[ Vision ] Failed to load ProggyClean font.");
-ProggyCleanFont = Font.new(Enum.Font.Code, Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+warn("[ Vision ] Failed to load Inter font.");
+ProggyCleanFont = Font.new(Enum.Font.GothamMedium, Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+end;
+if MediumAsset then
+ProggyCleanFontMedium = Font.new(MediumAsset, Enum.FontWeight.Medium, Enum.FontStyle.Normal);
+else
+ProggyCleanFontMedium = ProggyCleanFont;
 end;
 end;
 
@@ -589,7 +599,7 @@ local Gray = self.CreateInstance(self,"Frame", {
 Parent           = Frame;
 Size             = UDim2.new(0, 0, 0, 0);
 AutomaticSize    = Enum.AutomaticSize.XY;
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 self.CreateInstance(self,"UIPadding", {
@@ -600,7 +610,7 @@ local Inside = self.CreateInstance(self,"Frame", {
 Parent           = Gray;
 Size             = UDim2.new(0, 0, 0, 0);
 AutomaticSize    = Enum.AutomaticSize.XY;
-BackgroundColor3 = Color3.fromHex("131313");
+BackgroundColor3 = Color3.fromHex("0E0E10");
 BorderSizePixel  = 0;
 });
 self.CreateInstance(self,"UIPadding", {
@@ -707,8 +717,8 @@ self.CreateInstance(self,"UIGradient", {
 Parent   = Outer;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("212121"));
-NewColorSequenceKeypoint(1, Color3.fromHex("1A1A1A"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("151518"));
 });
 });
 self.CreateInstance(self,"UIStroke", {
@@ -729,7 +739,7 @@ BorderSizePixel = 0;
 });
 self.CreateInstance(self,"UIStroke", {
 Parent          = InnerOutline;
-Color           = Color3.fromHex("393939");
+Color           = Color3.fromHex("242429");
 Thickness       = 1;
 ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
 LineJoinMode    = Enum.LineJoinMode.Miter;
@@ -759,13 +769,15 @@ Position               = UDim2.new(0.5, 0, 0, (IsMobile and 4 or 9));
 Size                   = UDim2.new(1, -12, 0, (IsMobile and 12 or 18));
 BackgroundTransparency = 1;
 BorderSizePixel        = 0;
-Text                   = TitleText;
-TextColor3             = Color3.fromHex("FFFFFF");
-TextSize               = (IsMobile and 8 or 12);
+RichText               = true;
+Text                   = string.format("<u>%s</u>", TitleText);
+TextColor3             = Library.Accent;
+TextSize               = (IsMobile and 11 or 15);
 TextXAlignment         = Enum.TextXAlignment.Center;
 TextYAlignment         = Enum.TextYAlignment.Center;
 });
 if ProggyCleanFont then Title.FontFace = ProggyCleanFont end;
+Library.RegisterAccent(Library, Title, "TextColor3");
 
 local Content = self.CreateInstance(self,"Frame", {
 Name             = "Content";
@@ -779,8 +791,8 @@ self.CreateInstance(self,"UIGradient", {
 Parent   = Content;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("161616"));
-NewColorSequenceKeypoint(1, Color3.fromHex("101010"));
+NewColorSequenceKeypoint(0, Color3.fromHex("131316"));
+NewColorSequenceKeypoint(1, Color3.fromHex("0E0E10"));
 });
 });
 
@@ -889,6 +901,101 @@ if IsMobile then
     Window.MobileToggle = MobileToggle;
 end
 
+-- idk.lua-style dressing: rounded corners, bottom info bar, floating "toggle ui" pill
+do
+    Library.CreateInstance(Library,"UICorner", { Parent = Outer;        CornerRadius = UDim.new(0, 10); });
+    Library.CreateInstance(Library,"UICorner", { Parent = InnerOutline; CornerRadius = UDim.new(0, 10); });
+    Library.CreateInstance(Library,"UICorner", { Parent = Content;      CornerRadius = UDim.new(0, 8);  });
+
+    -- global UIScale (also shrinks the menu on mobile, like idk.lua's `scale`)
+    Window._Scale = Library.CreateInstance(Library,"UIScale", {
+        Parent = Outer;
+        Scale  = IsMobile and 0.9 or 1;
+    });
+
+    local TitleName = tostring(Opts.Title or Opts.Name or "Vision");
+
+    -- bottom info bar, sitting just under the window
+    local InfoBar = Library.CreateInstance(Library,"Frame", {
+        Name             = "InfoBar";
+        Parent           = Outer;
+        AnchorPoint      = Vector2.new(0, 0);
+        Position         = UDim2.new(0, 0, 1, 4);
+        Size             = UDim2.new(1, 0, 0, 22);
+        BackgroundColor3 = Color3.fromHex("17171B");
+        BorderSizePixel  = 0;
+        ZIndex           = 20;
+    });
+    Library.CreateInstance(Library,"UICorner", { Parent = InfoBar; CornerRadius = UDim.new(0, 8); });
+    Library.CreateInstance(Library,"UIStroke", {
+        Parent          = InfoBar;
+        Color           = Color3.fromHex("242429");
+        Thickness       = 1;
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
+    });
+    local InfoGame = Library.CreateInstance(Library,"TextLabel", {
+        Name                   = "Game";
+        Parent                 = InfoBar;
+        AnchorPoint            = Vector2.new(0, 0.5);
+        Position               = UDim2.new(0, 10, 0.5, 0);
+        Size                   = UDim2.new(0.6, -12, 1, 0);
+        BackgroundTransparency = 1;
+        Text                   = tostring(Opts.GameInfo or Opts.Game or game.Name or "roblox");
+        TextColor3             = Color3.fromHex("484849");
+        TextSize               = 12;
+        TextXAlignment         = Enum.TextXAlignment.Left;
+        TextYAlignment         = Enum.TextYAlignment.Center;
+        TextTruncate           = Enum.TextTruncate.AtEnd;
+    });
+    local InfoRight = Library.CreateInstance(Library,"TextLabel", {
+        Name                   = "Build";
+        Parent                 = InfoBar;
+        AnchorPoint            = Vector2.new(1, 0.5);
+        Position               = UDim2.new(1, -10, 0.5, 0);
+        Size                   = UDim2.new(0.4, -12, 1, 0);
+        BackgroundTransparency = 1;
+        RichText               = true;
+        Text                   = string.format('<font color="rgb(72,72,73)">lifetime, </font>%s', TitleName:lower());
+        TextColor3             = Library.Accent;
+        TextSize               = 12;
+        TextXAlignment         = Enum.TextXAlignment.Right;
+        TextYAlignment         = Enum.TextYAlignment.Center;
+    });
+    if ProggyCleanFont then InfoGame.FontFace = ProggyCleanFontMedium or ProggyCleanFont; InfoRight.FontFace = ProggyCleanFont; end;
+    Library.RegisterAccent(Library, InfoRight, "TextColor3");
+
+    -- floating "toggle ui" pill (desktop + mobile)
+    local TogglePill = Library.CreateInstance(Library,"TextButton", {
+        Name                   = "TogglePill";
+        Parent                 = Gui;
+        AnchorPoint            = Vector2.new(0, 1);
+        Position               = UDim2.new(0, 20, 1, -20);
+        Size                   = UDim2.fromOffset(78, 30);
+        BackgroundColor3       = Color3.fromHex("17171B");
+        BorderSizePixel        = 0;
+        AutoButtonColor        = false;
+        Text                   = "toggle ui";
+        TextColor3             = Color3.fromHex("F5F5F5");
+        TextSize               = 12;
+        ZIndex                 = 1000;
+    });
+    if ProggyCleanFont then TogglePill.FontFace = ProggyCleanFont end;
+    Library.CreateInstance(Library,"UICorner", { Parent = TogglePill; CornerRadius = UDim.new(0, 9); });
+    Library.CreateInstance(Library,"UIStroke", {
+        Parent          = TogglePill;
+        Color           = Color3.fromHex("242429");
+        Thickness       = 1;
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
+    });
+    TogglePill.MouseButton1Click:Connect(function()
+        Window:Toggle();
+    end);
+    TogglePill.TouchTap:Connect(function()
+        Window:Toggle();
+    end);
+    Window.TogglePill = TogglePill;
+end
+
 function Window:Tab(NameOrOpts)
 local TabOpts = typeof(NameOrOpts) == "table" and NameOrOpts or { Name = tostring(NameOrOpts) };
 local TabName = tostring(TabOpts.Name or TabOpts.Title or "Tab");
@@ -938,8 +1045,8 @@ local Gradient = Library.CreateInstance(Library,"UIGradient", {
 Parent   = Bg;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1F1F1F"));
-NewColorSequenceKeypoint(1, Color3.fromHex("181818"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("151518"));
 });
 });
 
@@ -972,7 +1079,7 @@ Parent                 = Bg;
 AnchorPoint            = Vector2.new(1, 0);
 Position               = UDim2.new(1, 0, 0, 2);
 Size                   = UDim2.new(0, 1, 1, -4);
-BackgroundColor3       = Color3.fromHex("393939");
+BackgroundColor3       = Color3.fromHex("242429");
 BorderSizePixel        = 0;
 BackgroundTransparency = 1;
 ZIndex                 = 2;
@@ -986,7 +1093,7 @@ BackgroundTransparency = 1;
 BorderSizePixel        = 0;
 Text                   = TabName;
 TextSize               = 12;
-TextColor3             = Color3.fromHex("8C8F99");
+TextColor3             = Color3.fromHex("919191");
 TextXAlignment         = Enum.TextXAlignment.Center;
 TextYAlignment         = Enum.TextYAlignment.Center;
 });
@@ -1105,8 +1212,8 @@ IsRight     = false;
 
 local PageInfo = TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out);
 local BgInfo   = TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out);
-local InactiveA, InactiveB = Color3.fromHex("1F1F1F"), Color3.fromHex("181818");
-local ActiveA,   ActiveB   = Color3.fromHex("161616"), Color3.fromHex("151515");
+local InactiveA, InactiveB = Color3.fromHex("17171B"), Color3.fromHex("151518");
+local ActiveA,   ActiveB   = Color3.fromHex("131316"), Color3.fromHex("131316");
 local GradT      = TabRef.Active and 1 or 0;
 local GradTarget = GradT;
 local function ApplyGrad()
@@ -1171,7 +1278,7 @@ if Bg and Bg.Parent then
     Bg.BackgroundColor3 = Color3.fromHex("FFFFFF");
 end
 if Lbl and Lbl.Parent then
-    Library.Tween(Library,Lbl, BgInfo, { TextColor3 = Color3.fromHex("8C8F99") }):Play();
+    Library.Tween(Library,Lbl, BgInfo, { TextColor3 = Color3.fromHex("919191") }):Play();
 end
 end;
 end;
@@ -1230,13 +1337,13 @@ Name             = "TitleCover";
 Parent           = Sec;
 Position         = UDim2.new(0, 7, 0, 0);
 Size             = UDim2.new(0, 0, 0, 2);
-BackgroundColor3 = Color3.fromHex("161616");
+BackgroundColor3 = Color3.fromHex("131316");
 BorderSizePixel  = 0;
 ZIndex           = 6;
 });
 
-local GradTop    = Color3.fromHex("161616");
-local GradBottom = Color3.fromHex("101010");
+local GradTop    = Color3.fromHex("131316");
+local GradBottom = Color3.fromHex("0E0E10");
 local function UpdateCoverColor()
 local Ch = self.Page.Parent.AbsoluteSize.Y;
 if Ch <= 0 then return end;
@@ -1306,13 +1413,13 @@ Library.Flags[Flag] = State;
 local Risk = Opts.Risk and string.lower(tostring(Opts.Risk))
 or (Opts.Risky and "risky") or (Opts.Warning and "warning") or nil;
 local OnColor  = Color3.fromHex("FFFFFF");
-local OffColor = Color3.fromHex("8C8F99");
+local OffColor = Color3.fromHex("919191");
 if Risk == "risky" or Risk == "danger" or Risk == "red" then
 OnColor  = Color3.fromHex("FF8585");
-OffColor = OnColor:Lerp(Color3.fromHex("4A4A4A"), 0.45);
+OffColor = OnColor:Lerp(Color3.fromHex("3A3A3E"), 0.45);
 elseif Risk == "warning" or Risk == "warn" or Risk == "yellow" then
 OnColor  = Color3.fromHex("FFD27B");
-OffColor = OnColor:Lerp(Color3.fromHex("4A4A4A"), 0.45);
+OffColor = OnColor:Lerp(Color3.fromHex("3A3A3E"), 0.45);
 end;
 
 local Row = Library.CreateInstance(Library,"TextButton", {
@@ -1339,7 +1446,7 @@ Name             = "Gray";
 Parent           = Box;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local BoxInside = Library.CreateInstance(Library,"Frame", {
@@ -1347,7 +1454,7 @@ Name             = "Inside";
 Parent           = BoxGray;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("131313");
+BackgroundColor3 = Color3.fromHex("0E0E10");
 BorderSizePixel  = 0;
 });
 
@@ -1357,7 +1464,7 @@ Parent                 = BoxInside;
 AnchorPoint            = Vector2.new(0.5, 0.5);
 Position               = UDim2.new(0.5, 0, 0.5, 0);
 Size                   = UDim2.new(0, 0, 0, 0);
-BackgroundColor3       = Color3.fromHex("3972EC");
+BackgroundColor3       = Color3.fromHex("00A2FF");
 BackgroundTransparency = 1;
 BorderSizePixel        = 0;
 });
@@ -1457,7 +1564,7 @@ Name             = "Gray";
 Parent           = KBtn;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local KInside = Library.CreateInstance(Library,"Frame", {
@@ -1472,8 +1579,8 @@ Library.CreateInstance(Library,"UIGradient", {
 Parent   = KInside;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1B1B1B"));
-NewColorSequenceKeypoint(1, Color3.fromHex("121212"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("0E0E10"));
 });
 });
 local KLbl = Library.CreateInstance(Library,"TextLabel", {
@@ -1610,14 +1717,14 @@ Position         = UDim2.new(1, -Off, 0.5, 0);
 Size             = UDim2.fromOffset(SwW, SwH);
 AutoButtonColor  = false;
 Text             = "";
-BackgroundColor3 = Color3.fromHex("000105");
+BackgroundColor3 = Color3.fromHex("000000");
 BorderSizePixel  = 0;
 });
 local SwInline = Library.CreateInstance(Library,"Frame", {
 Parent           = Swatch;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("252527");
+BackgroundColor3 = Color3.fromHex("17171D");
 BorderSizePixel  = 0;
 });
 local SwHandle = Library.CreateInstance(Library,"Frame", {
@@ -1661,7 +1768,7 @@ local PickerHolder = Library.CreateInstance(Library,"CanvasGroup", {
 Name              = "TogglePicker";
 Parent            = Gui;
 Size              = UDim2.new(0, 218, 0, 248);
-BackgroundColor3  = Color3.fromHex("131313");
+BackgroundColor3  = Color3.fromHex("0E0E10");
 BorderSizePixel   = 0;
 Visible           = false;
 GroupTransparency = 1;
@@ -1683,7 +1790,7 @@ BorderSizePixel        = 0;
 });
 local PickerInnerStroke = Library.CreateInstance(Library,"UIStroke", {
 Parent          = PickerInner;
-Color           = Color3.fromHex("393939");
+Color           = Color3.fromHex("242429");
 Thickness       = 1;
 Transparency    = 1;
 ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
@@ -1717,16 +1824,16 @@ BackgroundTransparency = 1;
 BorderSizePixel        = 0;
 });
 local CpInactiveSeq = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1F1F1F"));
-NewColorSequenceKeypoint(1, Color3.fromHex("181818"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("151518"));
 });
 local CpActiveSeq = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("161616"));
-NewColorSequenceKeypoint(1, Color3.fromHex("151515"));
+NewColorSequenceKeypoint(0, Color3.fromHex("131316"));
+NewColorSequenceKeypoint(1, Color3.fromHex("131316"));
 });
 local CpAnimInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out);
-local CpInactiveA, CpInactiveB = Color3.fromHex("1F1F1F"), Color3.fromHex("181818");
-local CpActiveA,   CpActiveB   = Color3.fromHex("161616"), Color3.fromHex("151515");
+local CpInactiveA, CpInactiveB = Color3.fromHex("17171B"), Color3.fromHex("151518");
+local CpActiveA,   CpActiveB   = Color3.fromHex("131316"), Color3.fromHex("131316");
 local CpOutlineNames = { "TopBlack", "TopGray", "BottomBlack", "BottomGray", "LeftBlack", "LeftGray", "RightBlack", "RightGray" };
 local ColorPage, AnimationsPanel;
 local CpTabToken = 0;
@@ -1891,7 +1998,7 @@ BorderSizePixel  = 0;
 });
 Library.CreateInstance(Library,"UIStroke", {
 Parent          = SatValArea;
-Color           = Color3.fromHex("000105");
+Color           = Color3.fromHex("000000");
 Thickness       = 1;
 ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
 });
@@ -1949,7 +2056,7 @@ Text             = "";
 });
 Library.CreateInstance(Library,"UIStroke", {
 Parent          = HueArea;
-Color           = Color3.fromHex("000105");
+Color           = Color3.fromHex("000000");
 Thickness       = 1;
 ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
 });
@@ -1985,7 +2092,7 @@ Text             = "";
 });
 Library.CreateInstance(Library,"UIStroke", {
 Parent          = AlphaArea;
-Color           = Color3.fromHex("000105");
+Color           = Color3.fromHex("000000");
 Thickness       = 1;
 ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
 });
@@ -2027,7 +2134,7 @@ local Gray = Library.CreateInstance(Library,"Frame", {
 Parent           = Box;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local Inside = Library.CreateInstance(Library,"Frame", {
@@ -2041,8 +2148,8 @@ Library.CreateInstance(Library,"UIGradient", {
 Parent   = Inside;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1B1B1B"));
-NewColorSequenceKeypoint(1, Color3.fromHex("121212"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("0E0E10"));
 });
 });
 local Input = Library.CreateInstance(Library,"TextBox", {
@@ -2053,7 +2160,7 @@ BackgroundTransparency = 1;
 BorderSizePixel        = 0;
 ClearTextOnFocus       = false;
 Text                   = "";
-PlaceholderColor3      = Color3.fromHex("5E626B");
+PlaceholderColor3      = Color3.fromHex("5A5A5A");
 TextColor3             = Color3.fromHex("FFFFFF");
 TextSize               = 12;
 TextXAlignment         = Enum.TextXAlignment.Center;
@@ -2074,7 +2181,7 @@ Name              = "AnimationsPanel";
 Parent            = MainBg;
 Position          = UDim2.new(0, 0, 0, 28);
 Size              = UDim2.new(1, 0, 1, -28);
-BackgroundColor3  = Color3.fromHex("131313");
+BackgroundColor3  = Color3.fromHex("0E0E10");
 BorderSizePixel   = 0;
 Visible           = false;
 GroupTransparency = 1;
@@ -2109,7 +2216,7 @@ Text             = "";
 });
 local ModeBoxGray = Library.CreateInstance(Library,"Frame", {
 Parent = ModeBox; Position = UDim2.new(0, 1, 0, 1);
-Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("393939"); BorderSizePixel = 0;
+Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("242429"); BorderSizePixel = 0;
 });
 local ModeInside = Library.CreateInstance(Library,"Frame", {
 Parent = ModeBoxGray; Position = UDim2.new(0, 1, 0, 1);
@@ -2118,8 +2225,8 @@ Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("FFFFFF"); Bor
 Library.CreateInstance(Library,"UIGradient", {
 Parent = ModeInside; Rotation = 90;
 Color = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1B1B1B"));
-NewColorSequenceKeypoint(1, Color3.fromHex("121212"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("0E0E10"));
 });
 });
 local ModeVal = Library.CreateInstance(Library,"TextLabel", {
@@ -2156,11 +2263,11 @@ ZIndex            = 60;
 });
 local ModePopupGray = Library.CreateInstance(Library,"Frame", {
 Parent = ModePopup; Position = UDim2.new(0, 1, 0, 1);
-Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("393939"); BorderSizePixel = 0; ZIndex = 60;
+Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("242429"); BorderSizePixel = 0; ZIndex = 60;
 });
 local ModePopupInside = Library.CreateInstance(Library,"Frame", {
 Parent = ModePopupGray; Position = UDim2.new(0, 1, 0, 1);
-Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("131313"); BorderSizePixel = 0; ZIndex = 61;
+Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("0E0E10"); BorderSizePixel = 0; ZIndex = 61;
 });
 Library.CreateInstance(Library,"UIListLayout", {
 Parent = ModePopupInside; FillDirection = Enum.FillDirection.Vertical;
@@ -2231,7 +2338,7 @@ AnimLbl("Speed", 42);
 local SpeedVal = Library.CreateInstance(Library,"TextLabel", {
 Parent = AnimationsPanel; AnchorPoint = Vector2.new(1, 0);
 Position = UDim2.new(1, 0, 0, 42); Size = UDim2.new(0, 40, 0, 12);
-BackgroundTransparency = 1; Text = "50%"; TextColor3 = Color3.fromHex("8C8F99"); TextSize = 12;
+BackgroundTransparency = 1; Text = "50%"; TextColor3 = Color3.fromHex("919191"); TextSize = 12;
 TextXAlignment = Enum.TextXAlignment.Right;
 }); FontIt(SpeedVal);
 local SpTrack = Library.CreateInstance(Library,"TextButton", {
@@ -2241,11 +2348,11 @@ BorderSizePixel = 0; AutoButtonColor = false; Text = "";
 });
 Library.CreateInstance(Library,"Frame", {
 Parent = SpTrack; Position = UDim2.new(0, 1, 0, 1);
-Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("393939"); BorderSizePixel = 0;
+Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("242429"); BorderSizePixel = 0;
 });
 local SpInside = Library.CreateInstance(Library,"Frame", {
 Parent = SpTrack:FindFirstChildOfClass("Frame"); Position = UDim2.new(0, 1, 0, 1);
-Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("131313"); BorderSizePixel = 0;
+Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("0E0E10"); BorderSizePixel = 0;
 });
 local SpFill = Library.CreateInstance(Library,"Frame", {
 Parent = SpInside; Position = UDim2.new(0, 1, 0, 1);
@@ -2482,7 +2589,7 @@ Position               = UDim2.new(1, 0, 0, 0);
 Size                   = UDim2.new(0, 40, 0, 14);
 BackgroundTransparency = 1;
 BorderSizePixel        = 0;
-TextColor3             = Color3.fromHex("8C8F99");
+TextColor3             = Color3.fromHex("919191");
 TextSize               = 12;
 TextXAlignment         = Enum.TextXAlignment.Right;
 TextYAlignment         = Enum.TextYAlignment.Center;
@@ -2508,14 +2615,14 @@ local TrackGray = Library.CreateInstance(Library,"Frame", {
 Parent           = Track;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local TrackInside = Library.CreateInstance(Library,"Frame", {
 Parent           = TrackGray;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("131313");
+BackgroundColor3 = Color3.fromHex("0E0E10");
 BorderSizePixel  = 0;
 });
 
@@ -2524,7 +2631,7 @@ Name             = "Fill";
 Parent           = TrackInside;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(0, 0, 1, -2);
-BackgroundColor3 = Color3.fromHex("3972EC");
+BackgroundColor3 = Color3.fromHex("00A2FF");
 BorderSizePixel  = 0;
 });
 Library.RegisterAccent(Library,Fill);
@@ -2642,7 +2749,7 @@ local BGray = Library.CreateInstance(Library,"Frame", {
 Parent           = Btn;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local BInside = Library.CreateInstance(Library,"Frame", {
@@ -2656,8 +2763,8 @@ Library.CreateInstance(Library,"UIGradient", {
 Parent   = BInside;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1B1B1B"));
-NewColorSequenceKeypoint(1, Color3.fromHex("121212"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("0E0E10"));
 });
 });
 local Lbl = Library.CreateInstance(Library,"TextLabel", {
@@ -2835,7 +2942,7 @@ Name             = "Gray";
 Parent           = Track;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local Fill = Library.CreateInstance(Library,"Frame", {
@@ -2856,7 +2963,7 @@ Size                   = UDim2.new(0, 40, 0, 12);
 BackgroundTransparency = 1;
 BorderSizePixel        = 0;
 Text                   = tostring(Value);
-TextColor3             = Color3.fromHex("A0A0A0");
+TextColor3             = Color3.fromHex("919191");
 TextSize               = 12;
 TextXAlignment         = Enum.TextXAlignment.Right;
 TextYAlignment         = Enum.TextYAlignment.Center;
@@ -2941,7 +3048,7 @@ local BGray = Library.CreateInstance(Library,"Frame", {
 Parent           = Btn;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local BInside = Library.CreateInstance(Library,"Frame", {
@@ -2955,8 +3062,8 @@ Library.CreateInstance(Library,"UIGradient", {
 Parent   = BInside;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("191919"));
-NewColorSequenceKeypoint(1, Color3.fromHex("262626"));
+NewColorSequenceKeypoint(0, Color3.fromHex("151518"));
+NewColorSequenceKeypoint(1, Color3.fromHex("242429"));
 });
 });
 local Lbl = Library.CreateInstance(Library,"TextLabel", {
@@ -3080,7 +3187,7 @@ local BoxGray = Library.CreateInstance(Library,"Frame", {
 Parent           = Box;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local BoxInside = Library.CreateInstance(Library,"Frame", {
@@ -3094,8 +3201,8 @@ Library.CreateInstance(Library,"UIGradient", {
 Parent   = BoxInside;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1B1B1B"));
-NewColorSequenceKeypoint(1, Color3.fromHex("121212"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("0E0E10"));
 });
 });
 
@@ -3166,7 +3273,7 @@ local PopupGray = Library.CreateInstance(Library,"Frame", {
 Parent           = Popup;
 Position         = UDim2.new(0, 0, 0, 0);
 Size             = UDim2.new(1, 0, 0, 142);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 ZIndex           = 50;
 });
@@ -3181,7 +3288,7 @@ local PopupInside = Library.CreateInstance(Library,"Frame", {
 Parent                 = PopupGray;
 Position               = UDim2.new(0, 0, 0, 0);
 Size                   = UDim2.new(1, 0, 0, 140);
-BackgroundColor3       = Color3.fromHex("131313");
+BackgroundColor3       = Color3.fromHex("0E0E10");
 BorderSizePixel        = 0;
 ZIndex                 = 50;
 });
@@ -3263,7 +3370,7 @@ local Btn = Library.CreateInstance(Library,"TextButton", {
 Name                   = "Option_" .. tostring(Opt);
 Parent                 = ScrollContent;
 Size                   = UDim2.new(1, 0, 0, 14);
-BackgroundColor3       = Color3.fromHex("131313");
+BackgroundColor3       = Color3.fromHex("0E0E10");
 BorderSizePixel        = 0;
 AutoButtonColor        = false;
 Text                   = tostring(Opt);
@@ -3411,7 +3518,7 @@ local BoxGray = Library.CreateInstance(Library,"Frame", {
 Parent           = Box;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local BoxInside = Library.CreateInstance(Library,"Frame", {
@@ -3425,8 +3532,8 @@ Library.CreateInstance(Library,"UIGradient", {
 Parent   = BoxInside;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1B1B1B")),
-NewColorSequenceKeypoint(1, Color3.fromHex("121212")),
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B")),
+NewColorSequenceKeypoint(1, Color3.fromHex("0E0E10")),
 });
 });
 
@@ -3440,7 +3547,7 @@ BorderSizePixel        = 0;
 ClearTextOnFocus       = false;
 Text                   = Default;
 PlaceholderText        = Placeholder;
-PlaceholderColor3      = Color3.fromHex("5E626B");
+PlaceholderColor3      = Color3.fromHex("5A5A5A");
 TextColor3             = Color3.fromHex("FFFFFF");
 TextSize               = 12;
 TextXAlignment         = Enum.TextXAlignment.Left;
@@ -3545,7 +3652,7 @@ local BGray = Library.CreateInstance(Library,"Frame", {
 Parent           = Btn;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local BInside = Library.CreateInstance(Library,"Frame", {
@@ -3559,8 +3666,8 @@ Library.CreateInstance(Library,"UIGradient", {
 Parent   = BInside;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("191919")),
-NewColorSequenceKeypoint(1, Color3.fromHex("262626")),
+NewColorSequenceKeypoint(0, Color3.fromHex("151518")),
+NewColorSequenceKeypoint(1, Color3.fromHex("242429")),
 });
 });
 local Val = Library.CreateInstance(Library,"TextLabel", {
@@ -3570,7 +3677,7 @@ Size             = UDim2.new(1, 0, 1, 0);
 BackgroundTransparency = 1;
 BorderSizePixel  = 0;
 Text             = Library.KeyNames[Key] or tostring(Key);
-TextColor3       = Color3.fromHex("A0A0A0");
+TextColor3       = Color3.fromHex("919191");
 TextSize         = 12;
 TextXAlignment   = Enum.TextXAlignment.Right;
 TextYAlignment   = Enum.TextYAlignment.Center;
@@ -3691,7 +3798,7 @@ Position         = UDim2.new(1, 0, 0.5, 0);
 Size             = UDim2.new(0, 27, 0, 15);
 AutoButtonColor  = false;
 Text             = "";
-BackgroundColor3 = Color3.fromHex("000105");
+BackgroundColor3 = Color3.fromHex("000000");
 BorderSizePixel  = 0;
 });
 local SwatchInline = Library.CreateInstance(Library,"Frame", {
@@ -3699,7 +3806,7 @@ Name             = "Inline";
 Parent           = Swatch;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("252527");
+BackgroundColor3 = Color3.fromHex("17171D");
 BorderSizePixel  = 0;
 });
 local SwatchHandle = Library.CreateInstance(Library,"Frame", {
@@ -3743,7 +3850,7 @@ local PickerHolder = Library.CreateInstance(Library,"CanvasGroup", {
 Name              = "Picker_" .. Name;
 Parent            = Gui;
 Size              = UDim2.new(0, 218, 0, 248);
-BackgroundColor3  = Color3.fromHex("131313");
+BackgroundColor3  = Color3.fromHex("0E0E10");
 BorderSizePixel   = 0;
 Visible           = false;
 GroupTransparency = 1;
@@ -3767,7 +3874,7 @@ ZIndex                 = 51;
 });
 local PickerInnerStroke = Library.CreateInstance(Library,"UIStroke", {
 Parent          = PickerInner;
-Color           = Color3.fromHex("393939");
+Color           = Color3.fromHex("242429");
 Thickness       = 1;
 Transparency    = 1;
 ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
@@ -3808,17 +3915,17 @@ ZIndex                 = 54;
 });
 
 local CpInactiveSeq = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1F1F1F"));
-NewColorSequenceKeypoint(1, Color3.fromHex("181818"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("151518"));
 });
 local CpActiveSeq = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("161616"));
-NewColorSequenceKeypoint(1, Color3.fromHex("151515"));
+NewColorSequenceKeypoint(0, Color3.fromHex("131316"));
+NewColorSequenceKeypoint(1, Color3.fromHex("131316"));
 });
 
 local CpAnimInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out);
-local CpInactiveA, CpInactiveB = Color3.fromHex("1F1F1F"), Color3.fromHex("181818");
-local CpActiveA,   CpActiveB   = Color3.fromHex("161616"), Color3.fromHex("151515");
+local CpInactiveA, CpInactiveB = Color3.fromHex("17171B"), Color3.fromHex("151518");
+local CpActiveA,   CpActiveB   = Color3.fromHex("131316"), Color3.fromHex("131316");
 local CpOutlineNames = { "TopBlack", "TopGray", "BottomBlack", "BottomGray", "LeftBlack", "LeftGray", "RightBlack", "RightGray" };
 local ColorPage, AnimationsPanel;
 local CpTabToken = 0;
@@ -3980,7 +4087,7 @@ Name              = "AnimationsPanel";
 Parent            = MainBg;
 Position          = UDim2.new(0, 0, 0, 28);
 Size              = UDim2.new(1, 0, 1, -28);
-BackgroundColor3  = Color3.fromHex("131313");
+BackgroundColor3  = Color3.fromHex("0E0E10");
 BorderSizePixel   = 0;
 Visible           = false;
 GroupTransparency = 1;
@@ -4019,7 +4126,7 @@ Library.CreateInstance(Library,"Frame", {
 Parent           = ModeBox;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local ModeInside = Library.CreateInstance(Library,"Frame", {
@@ -4033,8 +4140,8 @@ Library.CreateInstance(Library,"UIGradient", {
 Parent   = ModeInside;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1B1B1B"));
-NewColorSequenceKeypoint(1, Color3.fromHex("121212"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("0E0E10"));
 });
 });
 local ModeVal = Library.CreateInstance(Library,"TextLabel", {
@@ -4088,7 +4195,7 @@ local ModePopupGray = Library.CreateInstance(Library,"Frame", {
 Parent           = ModePopup;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 ZIndex           = 60;
 });
@@ -4096,7 +4203,7 @@ local ModePopupInside = Library.CreateInstance(Library,"Frame", {
 Parent           = ModePopupGray;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("131313");
+BackgroundColor3 = Color3.fromHex("0E0E10");
 BorderSizePixel  = 0;
 ZIndex           = 61;
 });
@@ -4184,7 +4291,7 @@ Position               = UDim2.new(1, 0, 0, 42);
 Size                   = UDim2.new(0, 40, 0, 12);
 BackgroundTransparency = 1;
 Text                   = "50%";
-TextColor3             = Color3.fromHex("8C8F99");
+TextColor3             = Color3.fromHex("919191");
 TextSize               = 12;
 TextXAlignment         = Enum.TextXAlignment.Right;
 }); FontIt(SpeedVal);
@@ -4199,11 +4306,11 @@ Text             = "";
 });
 local SpGray = Library.CreateInstance(Library,"Frame", {
 Parent = SpTrack; Position = UDim2.new(0, 1, 0, 1);
-Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("393939"); BorderSizePixel = 0;
+Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("242429"); BorderSizePixel = 0;
 });
 local SpInside = Library.CreateInstance(Library,"Frame", {
 Parent = SpGray; Position = UDim2.new(0, 1, 0, 1);
-Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("131313"); BorderSizePixel = 0;
+Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("0E0E10"); BorderSizePixel = 0;
 });
 local SpFill = Library.CreateInstance(Library,"Frame", {
 Parent           = SpInside;
@@ -4259,7 +4366,7 @@ ZIndex           = 55;
 });
 Library.CreateInstance(Library,"UIStroke", {
 Parent          = SatValArea;
-Color           = Color3.fromHex("000105");
+Color           = Color3.fromHex("000000");
 Thickness       = 1;
 ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
 });
@@ -4326,7 +4433,7 @@ ZIndex           = 55;
 });
 Library.CreateInstance(Library,"UIStroke", {
 Parent          = HueArea;
-Color           = Color3.fromHex("000105");
+Color           = Color3.fromHex("000000");
 Thickness       = 1;
 ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
 });
@@ -4367,7 +4474,7 @@ ZIndex           = 55;
 });
 Library.CreateInstance(Library,"UIStroke", {
 Parent          = AlphaArea;
-Color           = Color3.fromHex("000105");
+Color           = Color3.fromHex("000000");
 Thickness       = 1;
 ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
 });
@@ -4414,7 +4521,7 @@ local Gray = Library.CreateInstance(Library,"Frame", {
 Parent           = Box;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local Inside = Library.CreateInstance(Library,"Frame", {
@@ -4428,8 +4535,8 @@ Library.CreateInstance(Library,"UIGradient", {
 Parent   = Inside;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1B1B1B"));
-NewColorSequenceKeypoint(1, Color3.fromHex("121212"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("0E0E10"));
 });
 });
 local Input = Library.CreateInstance(Library,"TextBox", {
@@ -4440,7 +4547,7 @@ BackgroundTransparency = 1;
 BorderSizePixel        = 0;
 ClearTextOnFocus       = false;
 Text                   = "";
-PlaceholderColor3      = Color3.fromHex("5E626B");
+PlaceholderColor3      = Color3.fromHex("5A5A5A");
 TextColor3             = Color3.fromHex("FFFFFF");
 TextSize               = 12;
 TextXAlignment         = Enum.TextXAlignment.Center;
@@ -4689,7 +4796,7 @@ local BoxGray = Library.CreateInstance(Library,"Frame", {
 Parent           = Box;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local BoxInside = Library.CreateInstance(Library,"Frame", {
@@ -4703,8 +4810,8 @@ Library.CreateInstance(Library,"UIGradient", {
 Parent   = BoxInside;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1B1B1B"));
-NewColorSequenceKeypoint(1, Color3.fromHex("121212"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("0E0E10"));
 });
 });
 
@@ -4775,7 +4882,7 @@ local PopupGray = Library.CreateInstance(Library,"Frame", {
 Parent           = Popup;
 Position         = UDim2.new(0, 0, 0, 0);
 Size             = UDim2.new(1, 0, 0, 142);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 ZIndex           = 50;
 });
@@ -4790,7 +4897,7 @@ local PopupInside = Library.CreateInstance(Library,"Frame", {
 Parent                 = PopupGray;
 Position               = UDim2.new(0, 0, 0, 0);
 Size                   = UDim2.new(1, 0, 0, 140);
-BackgroundColor3       = Color3.fromHex("131313");
+BackgroundColor3       = Color3.fromHex("0E0E10");
 BorderSizePixel        = 0;
 ZIndex                 = 50;
 });
@@ -4862,7 +4969,7 @@ local Btn = Library.CreateInstance(Library,"TextButton", {
 Name                   = "Option_" .. tostring(Opt);
 Parent                 = ScrollContent;
 Size                   = UDim2.new(1, 0, 0, 14);
-BackgroundColor3       = Color3.fromHex("131313");
+BackgroundColor3       = Color3.fromHex("0E0E10");
 BorderSizePixel        = 0;
 AutoButtonColor        = false;
 Text                   = tostring(Opt);
@@ -5039,7 +5146,7 @@ local BoxGray = Library.CreateInstance(Library,"Frame", {
 Parent           = Box;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local BoxInside = Library.CreateInstance(Library,"Frame", {
@@ -5053,8 +5160,8 @@ Library.CreateInstance(Library,"UIGradient", {
 Parent   = BoxInside;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1B1B1B"));
-NewColorSequenceKeypoint(1, Color3.fromHex("121212"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("0E0E10"));
 });
 });
 
@@ -5068,7 +5175,7 @@ BorderSizePixel        = 0;
 ClearTextOnFocus       = false;
 Text                   = Default;
 PlaceholderText        = Placeholder;
-PlaceholderColor3      = Color3.fromHex("5E626B");
+PlaceholderColor3      = Color3.fromHex("5A5A5A");
 TextColor3             = Color3.fromHex("FFFFFF");
 TextSize               = 12;
 TextXAlignment         = Enum.TextXAlignment.Left;
@@ -5162,7 +5269,7 @@ local BoxGray = Library.CreateInstance(Library,"Frame", {
 Parent           = Box;
 Position         = UDim2.new(0, 1, 0, 1);
 Size             = UDim2.new(1, -2, 1, -2);
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 local BoxInside = Library.CreateInstance(Library,"Frame", {
@@ -5176,8 +5283,8 @@ Library.CreateInstance(Library,"UIGradient", {
 Parent   = BoxInside;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1B1B1B"));
-NewColorSequenceKeypoint(1, Color3.fromHex("121212"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("0E0E10"));
 });
 });
 
@@ -5273,7 +5380,7 @@ local PopupGray = Library.CreateInstance(Library,"Frame", {
 Parent           = Popup;
 Size             = UDim2.new(1, 0, 0, 0);
 AutomaticSize    = Enum.AutomaticSize.Y;
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 ZIndex           = 50;
 });
@@ -5288,7 +5395,7 @@ local PopupInside = Library.CreateInstance(Library,"Frame", {
 Parent           = PopupGray;
 Size             = UDim2.new(1, 0, 0, 0);
 AutomaticSize    = Enum.AutomaticSize.Y;
-BackgroundColor3 = Color3.fromHex("131313");
+BackgroundColor3 = Color3.fromHex("0E0E10");
 BorderSizePixel  = 0;
 ZIndex           = 50;
 });
@@ -5507,7 +5614,7 @@ BorderSizePixel  = 0;
 });
 local BoxGray = Library.CreateInstance(Library,"Frame", {
 Parent = Box; Position = UDim2.new(0, 1, 0, 1);
-Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("393939"); BorderSizePixel = 0;
+Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("242429"); BorderSizePixel = 0;
 });
 local BoxInside = Library.CreateInstance(Library,"Frame", {
 Parent = BoxGray; Position = UDim2.new(0, 1, 0, 1);
@@ -5516,8 +5623,8 @@ Size = UDim2.new(1, -2, 1, -2); BackgroundColor3 = Color3.fromHex("FFFFFF"); Bor
 Library.CreateInstance(Library,"UIGradient", {
 Parent = BoxInside; Rotation = 90;
 Color = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1B1B1B"));
-NewColorSequenceKeypoint(1, Color3.fromHex("121212"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("0E0E10"));
 });
 });
 
@@ -6314,8 +6421,8 @@ self.CreateInstance(self,"UIGradient", {
 Parent   = Frame;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1F1F1F"));
-NewColorSequenceKeypoint(1, Color3.fromHex("141414"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("0E0E10"));
 });
 });
 
@@ -6436,7 +6543,7 @@ Size                   = UDim2.new(1, -50, 1, 0);
 BackgroundTransparency = 1;
 Text                   = DisplayName;
 RichText               = true;
-TextColor3             = Color3.fromHex("BFC4CC");
+TextColor3             = Color3.fromHex("B4B4B4");
 TextSize               = 12;
 TextXAlignment         = Enum.TextXAlignment.Left;
 TextYAlignment         = Enum.TextYAlignment.Center;
@@ -6507,7 +6614,7 @@ Name             = "Gray";
 Parent           = Frame;
 Size             = UDim2.new(0, 0, 1, 0);
 AutomaticSize    = Enum.AutomaticSize.X;
-BackgroundColor3 = Color3.fromHex("393939");
+BackgroundColor3 = Color3.fromHex("242429");
 BorderSizePixel  = 0;
 });
 self.CreateInstance(self,"UIPadding", {
@@ -6551,8 +6658,8 @@ self.CreateInstance(self,"UIGradient", {
 Parent   = Inside;
 Rotation = 90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("1F1F1F"));
-NewColorSequenceKeypoint(1, Color3.fromHex("181818"));
+NewColorSequenceKeypoint(0, Color3.fromHex("17171B"));
+NewColorSequenceKeypoint(1, Color3.fromHex("151518"));
 });
 });
 self.CreateInstance(self,"UIPadding", {
@@ -6672,7 +6779,7 @@ local Inner = self.CreateInstance(self,"Frame", {
 Name                   = "Inner";
 Parent                 = Outer;
 Size                   = UDim2.new(1, 0, 1, 0);
-BackgroundColor3       = Color3.fromHex("262626");
+BackgroundColor3       = Color3.fromHex("242429");
 BackgroundTransparency = Library._NotifyTransparency or 0.3;
 BorderSizePixel        = 0;
 ZIndex                 = 101;
@@ -6686,7 +6793,7 @@ MinSize          = Vector2.new(0, 0);
 
 self.CreateInstance(self,"UIStroke", {
 Parent    = Inner;
-Color     = Color3.fromHex("393939");
+Color     = Color3.fromHex("242429");
 Thickness = 1;
 });
 
@@ -6695,7 +6802,7 @@ Name                   = "GradientFrame";
 Parent                 = Inner;
 Position               = UDim2.new(0, 1, 0, 1);
 Size                   = UDim2.new(1, -2, 1, -2);
-BackgroundColor3       = Color3.fromHex("262626");
+BackgroundColor3       = Color3.fromHex("242429");
 BackgroundTransparency = Library._NotifyTransparency or 0.3;
 BorderSizePixel        = 0;
 ZIndex                 = 102;
@@ -6705,8 +6812,8 @@ self.CreateInstance(self,"UIGradient", {
 Parent   = GradientFrame;
 Rotation = -90;
 Color    = NewColorSequence({
-NewColorSequenceKeypoint(0, Color3.fromHex("191919"));
-NewColorSequenceKeypoint(1, Color3.fromHex("262626"));
+NewColorSequenceKeypoint(0, Color3.fromHex("151518"));
+NewColorSequenceKeypoint(1, Color3.fromHex("242429"));
 });
 });
 
@@ -6718,7 +6825,7 @@ Size                   = UDim2.new(1, -8, 1, 0);
 BackgroundTransparency = 1;
 BorderSizePixel        = 0;
 Text                   = Text;
-TextColor3             = Color3.fromHex("A0A0A0");
+TextColor3             = Color3.fromHex("919191");
 TextSize               = 13;
 TextXAlignment         = Enum.TextXAlignment.Left;
 TextYAlignment         = Enum.TextYAlignment.Center;
