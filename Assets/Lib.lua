@@ -19,7 +19,7 @@ local getcustomasset = getcustomasset or getsynasset or function(p) return "rbxa
 local LRM_SecondsLeft = LRM_SecondsLeft or math.huge
 
 local library = {
-    _version      = "12",
+    _version      = "14",
     directory     = "Vision",
     folders       = { "/fonts", "/configs", "/assets" },
     priority      = {},
@@ -8017,8 +8017,9 @@ do
             secSet:colorpicker({ name = "Menu Accent", color = Color3.fromRGB(0, 162, 255), callback = function(color)
                 library:update_theme("accent", color)
             end })
-            local _menu_open = true
+            local _menu_open, _menu_first = true, true
             secSet:keybind({ name = "Menu Bind", key = Enum.KeyCode.Insert, seperator = true, callback = function()
+                if _menu_first then _menu_first = false; return end
                 _menu_open = not _menu_open
                 if win.toggle_menu then win.toggle_menu(_menu_open) end
             end })
@@ -8063,54 +8064,6 @@ do
             secSet:button({ name = "Rejoin", callback = function()
                 pcall(function() Services.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId) end)
             end })
-
-            -- Playerlist (from idk.lua init_config)
-            local players = Services.Players
-            local lp = players.LocalPlayer
-            local secPL = tabref:Section({ Name = "Players", Side = "Left" })
-            local plrList = secPL:list({ options = {}, flag = "player_list" })
-
-            local secPO = tabref:Section({ Name = "Player Options", Side = "Right" })
-            local selLabel = secPO:label({ name = "Selected Player : None" })
-            local statLabel = secPO:label({ name = "Status : None" })
-
-            task.spawn(function()
-                while task.wait(0.2) do
-                    selLabel.set(string.format("Selected Player : %s", library.flags["player_list"] or "None"))
-                    local pv = library.flags["player_list"]
-                    local status = "None"
-                    if pv then
-                        if table.find(library.priority, pv) then status = "<font color='Color3.fromRGB(255,0,0)'>Priority</font>"
-                        elseif table.find(library.whitelist, pv) then status = "<font color='Color3.fromRGB(0,255,0)'>Whitelisted</font>" end
-                    end
-                    statLabel.set(string.format("Status : %s", status))
-                end
-            end)
-
-            secPO:button({ name = "Prioritise", callback = function()
-                local p = library.flags["player_list"]; if not p then return end
-                local wi = table.find(library.whitelist, p); if wi then table.remove(library.whitelist, wi) end
-                local pi = table.find(library.priority, p)
-                if pi then table.remove(library.priority, pi) else table.insert(library.priority, p) end
-            end })
-            secPO:button({ name = "Whitelist", callback = function()
-                local p = library.flags["player_list"]; if not p then return end
-                local pi = table.find(library.priority, p); if pi then table.remove(library.priority, pi) end
-                local wi = table.find(library.whitelist, p)
-                if wi then table.remove(library.whitelist, wi) else table.insert(library.whitelist, p) end
-            end })
-
-            local function refreshPlrs()
-                local cache = {}
-                for _, v in players:GetPlayers() do
-                    if v ~= lp then table.insert(cache, v.Name) end
-                end
-                table.sort(cache)
-                plrList.refresh_options(cache)
-            end
-            task.spawn(refreshPlrs)
-            players.PlayerAdded:Connect(refreshPlrs)
-            players.PlayerRemoving:Connect(refreshPlrs)
         end
 
         return tabref
